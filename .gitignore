@@ -1,0 +1,13 @@
+*.fastq
+*.fastq.gz
+*.fq.gz
+*.bam
+*.sam
+*.tmp
+*.log
+*.sqlite
+results/
+fastq/
+COI*
+tmp*
+

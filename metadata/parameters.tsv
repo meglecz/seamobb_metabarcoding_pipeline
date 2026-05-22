@@ -1,0 +1,6 @@
+"run"	"global_read_count_cutoff"	"pcr_error_var_prop"	"lfn_sample_replicate_cutoff"	"lfn_read_count_cutoff"	"lfn_variant_replicate_cutoff"
+"Arm01"	"10"	"0.15"	"0.0009"	"10"	"0.042"
+"Arm02"	"10"	"0.15"	"0.001"	"20"	"0.047"
+"Arm03"	"10"	"0.15"	"0.0009"	"10"	"0.021"
+"Arm04"	"10"	"0.15"	"0.001"	"10"	"0.032"
+"TEST1"	"10"	"0.15"	"0.001"	"30"	"0.016"

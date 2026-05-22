@@ -1,0 +1,3 @@
+cutadapt_error_rate: 0.1
+cutadapt_minimum_length: 295
+cutadapt_maximum_length: 331

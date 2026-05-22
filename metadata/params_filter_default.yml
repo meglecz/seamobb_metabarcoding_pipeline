@@ -1,0 +1,5 @@
+global_read_count_cutoff: 10
+lfn_variant_replicate_cutoff: 0.001
+lfn_read_count_cutoff: 10
+lfn_sample_replicate_cutoff: 0.001
+pcr_error_var_prop: 0.10
