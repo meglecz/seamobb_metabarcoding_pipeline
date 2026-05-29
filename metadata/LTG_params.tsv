@@ -1,0 +1,7 @@
+"pid"	"pcov"	"phit"	"taxn"	"seqn"	"refres"	"ltgres"
+100	80	100	1	1	"species"	"species"
+97	80	100	1	1	"genus"	"species"
+95	80	90	3	3	"family"	"species"
+90	80	90	3	3	"order"	"genus"
+85	80	90	5	5	"class"	"family"
+80	80	90	5	5	"phylum"	"family"

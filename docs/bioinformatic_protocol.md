@@ -14,7 +14,7 @@ Chenuil *et al*., 2026 (DOI: xxxxxxxxxxxx)
 
 The pipeline relies on the following software and tools:
 
-* **R (≥ 4.0)** with packages  `yaml` and `dplyr`
+* **R (≥ 4.0)** with packages  `yaml`,  `dplyr`,  `tidyr` and [`vtamR`](https://github.com/meglecz/vtamR)
   Used for metadata preparation and parameter file generation.
 
 * **VTAM (0.2.0)**
@@ -24,6 +24,13 @@ The pipeline relies on the following software and tools:
 * **mkCOInr (≥ v0.1)**
   Toolkit used to build and customize the COInr reference database.
   Documentation: [https://mkcoinr.readthedocs.io/en/latest/](https://mkcoinr.readthedocs.io/en/latest/)
+  
+* ** mkLTG (≥ v0.1.0)**
+  Taxonomic assignment using a series of thresholds for lowest common ancestor approach.
+  Documentation: [https://github.com/meglecz/mkLTG](https://github.com/meglecz/mkLTG)
+
+* ** perl (≥v5.26.2)**
+[https://www.perl.org/](https://www.perl.org/)
 
 ---
 
@@ -53,7 +60,6 @@ The pipeline below describes the analyses performed starting from non-demultiple
 
 The raw non-demultiplexed FASTQ files used as input for the pipeline can be downloaded from Zenodo: [10.5281/zenodo.20344491](10.5281/zenodo.20344491)
 
-
 ---
 
 ## Metadata
@@ -77,6 +83,11 @@ Columns:
 
 ---
 
+### `LTG_params.tsv`
+Parmater setting for taxonomic assignement using mkLTG ([Meglécz, 2023](https://link.springer.com/article/10.1007/s42977-024-00201-x)).
+
+---
+
 ### `mock_composition_seamobb.tsv`
 
 Contains the expected ASVs for the species composing each mock community.
@@ -94,6 +105,28 @@ Columns:
 
 ---
 
+### `parameters.tsv`
+
+Contains parameter values used in the YAML configuration files for the `optimize2` and `filter2` VTAM steps.
+
+These values are provided to facilitate reproducibility of the pipeline.
+
+* `pcr_error_var_prop` and `lfn_sample_replicate_cutoff` were determined after the `optimize1` step.
+* `lfn_read_count_cutoff` and `lfn_variant_replicate_cutoff` were determined after the `optimize2` step.
+
+---
+
+### `private_sequences.tsv`
+
+Sequences to be added to the custom database for taxonomic assignment; these sequences had not yet been published in 2022.
+
+---
+
+### `taxon_list_insecta.tsv`
+
+List of taxa to exclude from the custom database for taxonomic assignement.
+
+---
 ### `sample_types.tsv`
 
 List of all samples.
@@ -109,16 +142,7 @@ Columns:
 
 ---
 
-### `parameters.tsv`
 
-Contains parameter values used in the YAML configuration files for the `optimize2` and `filter2` VTAM steps.
-
-These values are provided to facilitate reproducibility of the pipeline.
-
-* `pcr_error_var_prop` and `lfn_sample_replicate_cutoff` were determined after the `optimize1` step.
-* `lfn_read_count_cutoff` and `lfn_variant_replicate_cutoff` were determined after the `optimize2` step.
-
----
 
 ## Shared parameter files
 
@@ -278,7 +302,9 @@ rm -rI COInr_2022_05_06
 
 ---
 
-# VTAM Pipeline
+# VTAM Pipeline 
+
+[Gonzalez et al., 2023](https://spj.science.org/doi/10.1016/j.csbj.2023.01.034)
 
 Sequencing runs are analysed independently and pooled after filtering.
 
@@ -397,13 +423,31 @@ bash scripts/6_VTAM_filter2.sh
 
 ---
 
-## Pool sequencing runs and assign taxonomy
+# Pool sequencing runs and cluster ASVs
 
-The filtered results from the five sequencing runs are pooled into a final ASV table, and ASVs are taxonomically assigned.
+The filtered results from the five sequencing runs are pooled into a final ASV table, and ASV are clustered using SRARM (Mahé et al., 2015)[https://peerj.com/articles/1420/] with d=7.
 
 ```bash
-bash scripts/7_VTAM_pool_taxassign.sh
+perl scripts/7_pool_runs.pl
 ```
+
+---
+
+# Taxonomic assignment
+
+All ASV in the final ASV table are assigned to taxa using mkLTG (Meglécz, 2023)[https://link.springer.com/article/10.1007/s42977-024-00201-x]
+
+```bash
+perl ~/mkLTG/scripts/mkLTG.pl \
+    -in results/pooled_asv_tables.tsv \
+    -taxonomy COInr_seamobb_2022/COInr_seamobb_2022_taxonomy.tsv \
+    -blast_db COInr_seamobb_2022/COInr_seamobb_2022 \
+    -outdir results \
+    -out_name pooled_asv_tables \
+    -ltg_params metadata/LTG_params.tsv
+```
+
+---
 
 
 
